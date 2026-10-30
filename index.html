@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LashPro Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6F1; --card:#FFFFFF; --ink:#2C2226; --muted:#8B7B80; --line:#EADFDA;
+    --primary:#5A313B; --soft:#F3E7E8; --ok:#2F6B4F; --warn:#8A6A2B; --radius:20px;
+    --shadow:0 24px 60px -40px rgba(60,30,40,.65);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:500;margin:0;letter-spacing:-.01em;line-height:1.15}
+  h1{font-size:29px}
+  h2{font-size:21px}
+  .app{display:flex;min-height:100vh}
+  .side{width:250px;flex:none;border-right:1px solid var(--line);background:#FBF8F4;padding:22px 16px;display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;gap:11px;align-items:center;padding:0 4px}
+  .brand .mark{width:36px;height:36px;flex:none;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:15px}
+  .brand strong{font-family:'Fraunces',serif;font-weight:500;font-size:16px;display:block;line-height:1.2}
+  .brand small{color:var(--muted);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:3px}
+  .nav button{all:unset;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;font-size:14px;color:#5C4B51;cursor:pointer;font-family:inherit}
+  .nav button:hover{background:#F2E8E6}
+  .nav button.on{background:var(--primary);color:#fff}
+  .side .foot{margin-top:auto;font-size:11.5px;color:var(--muted);padding:0 6px;line-height:1.45}
+  .main{flex:1;min-width:0;padding:28px 30px 70px}
+  .wrap{max-width:1080px;margin:0 auto}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .sub{color:var(--muted);font-size:13px;margin-top:5px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px}
+  .stat span{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+  .stat b{display:block;font-family:'Fraunces',serif;font-size:23px;font-weight:500;margin-top:7px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;background:var(--primary);color:#fff;padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.outline{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn.outline:hover{background:#F6EDEA}
+  .btn.small{padding:6px 12px;font-size:12.5px}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:500}
+  .b-pendente{background:#FBF0DA;color:var(--warn)}
+  .b-confirmado,.b-pago{background:#E4F2EA;color:var(--ok)}
+  .b-concluido{background:var(--soft);color:var(--primary)}
+  .b-cancelado{background:#F7E3E3;color:#8E3B42}
+  .appt{display:grid;grid-template-columns:66px 1fr auto;gap:16px;padding:15px 16px;border:1px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:9px}
+  .appt .time{font-family:'Fraunces',serif;font-size:16px}
+  .actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-content:flex-start}
+  .datebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .wd{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:9px 4px;text-align:center;cursor:pointer;font-size:11px;color:var(--muted);font-family:inherit}
+  .wd b{display:block;font-family:'Fraunces',serif;font-size:16px;color:var(--ink);font-weight:500;margin:2px 0}
+  .wd span{display:block;font-size:10.5px;opacity:.75}
+  .wd.on{background:var(--primary);border-color:var(--primary);color:#F3E7E8}
+  .wd.on b{color:#fff}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  input,select,textarea{width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 11px;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:#C6A9AE;box-shadow:0 0 0 3px rgba(90,49,59,.07)}
+  label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+  .field{margin-bottom:12px}
+  .muted{color:var(--muted);font-size:13px}
+  .tiny{color:var(--muted);font-size:12.5px}
+  .overlay{position:fixed;inset:0;background:rgba(44,34,38,.45);display:grid;place-items:center;padding:16px;z-index:50;overflow:auto}
+  .dialog{background:var(--card);border-radius:22px;width:100%;max-width:640px;padding:22px;max-height:92vh;overflow:auto;box-shadow:var(--shadow)}
+  .dialog .head{margin-bottom:16px}
+  .dialog .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+  .thumb{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;background:var(--soft);display:block}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;z-index:90;box-shadow:var(--shadow)}
+  .sw{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);margin-bottom:6px}
+  .sw input{width:auto}
+  .empty{text-align:center;padding:26px;color:var(--muted);font-size:13.5px}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qty button{border:1px solid var(--line);background:#fff;border-radius:9px;width:28px;height:28px;cursor:pointer;font-size:15px;line-height:1;color:var(--ink);font-family:inherit}
+  @media(max-width:880px){
+    .app{flex-direction:column}
+    .side{width:auto;height:auto;position:static;border-right:0;border-bottom:1px solid var(--line);padding:14px}
+    .nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:2px}
+    .nav button{white-space:nowrap}
+    .side .foot{display:none}
+    .main{padding:18px 16px 60px}
+    .stats,.grid2,.grid3{grid-template-columns:1fr}
+    .appt{grid-template-columns:60px 1fr}
+    .actions{grid-column:1/-1;justify-content:flex-start}
+    h1{font-size:25px}
+    .week{gap:5px}
+    .wd{font-size:9.5px;padding:7px 2px}
+    .wd b{font-size:14px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">✦</div>
+      <div>
+        <strong id="brandName">Studio</strong>
+        <small>LashPro Manager</small>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">Arquivo único. Seus dados ficam salvos neste navegador (localStorage).</div>
+  </aside>
+  <main class="main"><div class="wrap" id="main"></div></main>
+</div>
+<div id="modalHost"></div>
+<script>
+/* ---------- utilidades ---------- */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const MONTHS = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const DAYS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const DAYS_SHORT = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+const STATUS_LABEL = { pendente:'Aguardando', confirmado:'Confirmado', concluido:'Concluído', cancelado:'Cancelado' };
+
+const uid = () => Math.random().toString(36).slice(2, 9);
+const brl = (n) => 'R$ ' + (Number(n) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const iso = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const todayISO = () => iso(new Date());
+const parseISO = (s) => new Date(s + 'T12:00:00');
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const fmtBR = (s) => { if (!s) return ''; const d = parseISO(s); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); };
+const fmtLong = (s) => { const d = parseISO(s); return DAYS[d.getDay()] + ', ' + d.getDate() + ' de ' + MONTHS[d.getMonth()]; };
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const minutesOf = (t) => { const p = String(t || '0:0').split(':'); return (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0); };
+const hhmm = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const digits = (s) => String(s || '').replace(/\D/g, '');
+const val = (sel) => ($(sel) ? String($(sel).value).trim() : '');
+const num = (sel) => Number((val(sel) || '0').replace(',', '.')) || 0;
+
+/* ---------- dados ---------- */
+const KEY = 'lashpro_manager_v1';
+const withIds = (arr) => arr.map((o) => Object.assign({ id: uid() }, o));
+
+function seed() {
+  const d = (n) => iso(addDays(new Date(), n));
+  const t = todayISO();
+  return {
+    settings: {
+      studio_name: 'Studio Lumière', owner_name: 'Sua Profissional',
+      whatsapp: '', instagram: '@studiolumiere',
+      address: 'Atendimento com hora marcada',
+      about: 'Extensão de cílios feita com calma, técnica e produtos premium. Cada olhar é planejado para o formato do seu rosto.',
+      weekday_open: '18:00', weekday_close: '22:00', weekend_open: '09:00', weekend_close: '18:00',
+      slot_interval: 30, closed_days: [],
+      /* mensagem para aplicação (extensão de cílios) */
+      reminder_message: 'Oi {nome}! Passando para lembrar do seu agendamento de extensão de cílios no dia {data} às {hora}. Confirma pra mim?',
+      /* mensagem para manutenção */
+      reminder_message_maintenance: 'Oi {nome}! Passando para lembrar da sua manutenção no dia {data} às {hora}. Confirma pra mim?',
+      confirm_message: 'Oi {nome}! Seu {servico} está confirmado para {data} às {hora}. Até lá!'
+    },
+    services: withIds([
+      { name: 'Volume Brasileiro', description: 'Fios em leque aplicados um a um para um olhar marcante e cheio.', price: 180, duration_minutes: 120, category: 'Volume', active: true },
+      { name: 'Fio a Fio Clássico', description: 'Um fio para cada cílio natural. Leveza e efeito natural.', price: 130, duration_minutes: 90, category: 'Fio a fio', active: true },
+      { name: 'Lash Lifting', description: 'Curvatura e tintura nos seus próprios cílios, com efeito de rímel.', price: 150, duration_minutes: 75, category: 'Lifting', active: true },
+      { name: 'Híbrido', description: 'Mistura de fio a fio e volume, com efeito sob medida.', price: 160, duration_minutes: 105, category: 'Híbrido', active: true },
+      { name: 'Manutenção', description: 'Reposição das extensões feitas no studio, dentro de 21 dias.', price: 90, duration_minutes: 60, category: 'Manutenção', active: true }
+    ]),
+    clients: withIds([
+      { full_name: 'Ana Souza', phone: '(11) 98877-1020', email: 'ana.souza@email.com', instagram: '@anasouza', notes: 'Prefere volume mais longo no canto externo.', anamnesis_allergies: 'Nenhuma alergia conhecida.', anamnesis_medications: 'Nenhum.', anamnesis_observations: 'Retira as lentes antes do procedimento.', anamnesis_lenses: true, anamnesis_pregnant: false },
+      { full_name: 'Beatriz Lima', phone: '(11) 99654-3311', email: 'bia.lima@email.com', instagram: '@bialima', notes: 'Primeira vez com extensão.', anamnesis_allergies: 'Alergia a esmalte, sem reação a cola.', anamnesis_medications: 'Anticoncepcional.', anamnesis_observations: 'Fez teste de sensibilidade antes da aplicação.', anamnesis_lenses: false, anamnesis_pregnant: false },
+      { full_name: 'Carla Mendes', phone: '(11) 97733-8899', email: 'carla.mendes@email.com', instagram: '@carlamendes', notes: 'Gosta de efeito natural, fios curtos.', anamnesis_allergies: 'Nenhuma.', anamnesis_medications: 'Nenhum.', anamnesis_lenses: false, anamnesis_pregnant: false },
+      { full_name: 'Patrícia Gomes', phone: '(11) 93311-2266', email: '', instagram: '', notes: '', anamnesis_allergies: '', anamnesis_medications: '', anamnesis_lenses: false, anamnesis_pregnant: false },
+      { full_name: 'Juliana Prado', phone: '(11) 95544-1122', email: '', instagram: '@juprado', notes: 'Prefere horários pela manhã.', anamnesis_allergies: '', anamnesis_medications: '', anamnesis_lenses: false, anamnesis_pregnant: false },
+      { full_name: 'Marcela Reis', phone: '(11) 94422-7788', email: '', instagram: '', notes: '', anamnesis_allergies: '', anamnesis_medications: '', anamnesis_lenses: false, anamnesis_pregnant: false }
+    ]),
+    appointments: withIds([
+      { client_name: 'Ana Souza', client_phone: '(11) 98877-1020', service_name: 'Volume Brasileiro', price: 180, date: d(0), start_time: '18:00', duration_minutes: 120, status: 'confirmado', payment_status: 'pendente', payment_method: 'pix', notes: 'Prefere volume mais longo no canto externo.' },
+      { client_name: 'Beatriz Lima', client_phone: '(11) 99654-3311', service_name: 'Fio a Fio Clássico', price: 130, date: d(0), start_time: '20:00', duration_minutes: 90, status: 'pendente', payment_status: 'pendente', payment_method: 'pix', notes: 'Primeira vez com extensão, chegar 10 min antes.' },
+      { client_name: 'Carla Mendes', client_phone: '(11) 97733-8899', service_name: 'Híbrido', price: 160, date: d(2), start_time: '19:00', duration_minutes: 105, status: 'confirmado', payment_status: 'pendente', payment_method: 'cartao', notes: '' },
+      { client_name: 'Patrícia Gomes', client_phone: '(11) 93311-2266', service_name: 'Lash Lifting', price: 150, date: d(4), start_time: '10:00', duration_minutes: 75, status: 'confirmado', payment_status: 'pendente', payment_method: 'pix', notes: '' },
+      { client_name: 'Juliana Prado', client_phone: '(11) 95544-1122', service_name: 'Manutenção', price: 90, date: d(6), start_time: '09:00', duration_minutes: 60, status: 'pendente', payment_status: 'pendente', payment_method: 'dinheiro', notes: '' },
+      { client_name: 'Marcela Reis', client_phone: '(11) 94422-7788', service_name: 'Fio a Fio Clássico', price: 130, date: d(-2), start_time: '18:00', duration_minutes: 90, status: 'concluido', payment_status: 'pago', payment_method: 'dinheiro', notes: '' },
+      { client_name: 'Ana Souza', client_phone: '(11) 98877-1020', service_name: 'Manutenção', price: 90, date: d(-5), start_time: '19:00', duration_minutes: 60, status: 'concluido', payment_status: 'pago', payment_method: 'pix', notes: '' },
+      { client_name: 'Patrícia Gomes', client_phone: '(11) 93311-2266', service_name: 'Volume Brasileiro', price: 180, date: d(-9), start_time: '10:00', duration_minutes: 120, status: 'concluido', payment_status: 'pago', payment_method: 'pix', notes: '' },
+      { client_name: 'Carla Mendes', client_phone: '(11) 97733-8899', service_name: 'Volume Brasileiro', price: 180, date: d(-16), start_time: '19:00', duration_minutes: 120, status: 'concluido', payment_status: 'pago', payment_method: 'cartao', notes: '' }
+    ]),
+    materials: withIds([
+      { name: 'Cola Premium 5ml', category: 'Cola', unit: 'frasco', quantity: 3, min_quantity: 2, cost_per_unit: 120, notes: 'Validade curta: usar em até 4 semanas após abrir' },
+      { name: 'Fios Volume 0.05', category: 'Fios', unit: 'caixa', quantity: 4, min_quantity: 2, cost_per_unit: 89, notes: '' },
+      { name: 'Fios Fio a Fio 0.15', category: 'Fios', unit: 'caixa', quantity: 1, min_quantity: 2, cost_per_unit: 75, notes: '' },
+      { name: 'Pinça curva', category: 'Pinça', unit: 'unidade', quantity: 2, min_quantity: 1, cost_per_unit: 65, notes: '' },
+      { name: 'Adesivo hipoalergênico', category: 'Higiene', unit: 'rolo', quantity: 2, min_quantity: 3, cost_per_unit: 35, notes: '' },
+      { name: 'Removedor de cílios', category: 'Higiene', unit: 'frasco', quantity: 5, min_quantity: 2, cost_per_unit: 48, notes: '' }
+    ]),
+    ui: { view: 'agenda', day: t, month: t.slice(0, 7) }
+  };
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && data.settings && data.appointments) {
+        /* migração: garante mensagem de manutenção */
+        if (data.settings.reminder_message_maintenance === undefined) {
+          data.settings.reminder_message_maintenance = 'Oi {nome}! Passando para lembrar da sua manutenção no dia {data} às {hora}. Confirma pra mim?';
+        }
+        /* remove portfólio de bases antigas */
+        if (data.portfolio) delete data.portfolio;
+        if (data.ui && data.ui.view === 'portfolio') data.ui.view = 'agenda';
+        return data;
+      }
+    }
+  } catch (e) {}
+  return seed();
+}
+
+let db = load();
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} };
+const save = () => { persist(); render(); };
+
+/* ---------- avisos ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const old = $('.toast');
+  if (old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.remove(), 2400);
+}
+
+/* ---------- modal ---------- */
+function openModal(html) {
+  $('#modalHost').innerHTML = '<div class="overlay" id="overlay"><div class="dialog">' + html + '</div></div>';
+  $('#overlay').addEventListener('click', (e) => { if (e.target.id === 'overlay') closeModal(); });
+  document.addEventListener('keydown', escClose);
+}
+function closeModal() { $('#modalHost').innerHTML = ''; document.removeEventListener('keydown', escClose); }
+function escClose(e) { if (e.key === 'Escape') closeModal(); }
+const modalFoot = (label, act) => '<div class="foot"><button class="btn outline" data-act="close">Cancelar</button><button class="btn" data-act="' + act + '">' + label + '</button></div>';
+
+/* ---------- regras de agenda ---------- */
+function slotsFor(dateISO, duration, ignoreId) {
+  const s = db.settings;
+  const dow = parseISO(dateISO).getDay();
+  if ((s.closed_days || []).includes(DAYS[dow])) return [];
+  const weekend = dow === 0 || dow === 6;
+  const open = weekend ? s.weekend_open : s.weekday_open;
+  const close = weekend ? s.weekend_close : s.weekday_close;
+  if (!open || !close) return [];
+  const step = Number(s.slot_interval) || 30;
+  const dur = Number(duration) || 60;
+  const busy = db.appointments
+    .filter((a) => a.date === dateISO && a.status !== 'cancelado' && a.id !== ignoreId)
+    .map((a) => { const st = minutesOf(a.start_time); return { s: st, e: st + (Number(a.duration_minutes) || 60) }; });
+  const out = [];
+  for (let t = minutesOf(open); t + dur <= minutesOf(close); t += step) {
+    if (!busy.some((b) => t < b.e && t + dur > b.s)) out.push(hhmm(t));
+  }
+  return out;
+}
+
+const apptsOfClient = (c) => db.appointments.filter((a) =>
+  (a.client_name || '').toLowerCase() === (c.full_name || '').toLowerCase() ||
+  (digits(a.client_phone) && digits(a.client_phone) === digits(c.phone)));
+const visitsOf = (c) => apptsOfClient(c).filter((a) => a.status === 'concluido').length;
+const spentOf = (c) => apptsOfClient(c).filter((a) => a.payment_status === 'pago').reduce((s, a) => s + Number(a.price || 0), 0);
+
+/* ---------- lembrete: agendamento (extensão) x manutenção ----------
+   Edite esta lista para mudar o que é considerado MANUTENÇÃO.
+   Tudo que NÃO casar aqui é tratado como agendamento de extensão de cílios. */
+const MAINTENANCE_TERMS = ['manutenção', 'manutencao', 'retorno', 'retoque'];
+
+function isMaintenanceAppt(a) {
+  const svc = db.services.find((s) => s.name === a.service_name);
+  const hay = String((a.service_name || '') + ' ' + ((svc && svc.category) || '')).toLowerCase();
+  return MAINTENANCE_TERMS.some((t) => hay.includes(t));
+}
+
+/* ---------- telas ---------- */
+const NAV = [
+  ['agenda', 'Agenda'], ['clientes', 'Clientes'], ['servicos', 'Serviços e valores'],
+  ['financeiro', 'Financeiro'], ['estoque', 'Estoque'], ['config', 'Configurações']
+];
+
+function viewAgenda() {
+  const day = db.ui.day;
+  const list = db.appointments.filter((a) => a.date === day).sort((a, b) => a.start_time.localeCompare(b.start_time));
+  const ativos = list.filter((a) => a.status !== 'cancelado');
+  const previsto = ativos.reduce((s, a) => s + Number(a.price || 0), 0);
+  const aguardando = list.filter((a) => a.status === 'pendente').length;
+  const base = parseISO(day);
+  const dow = base.getDay();
+  const weekStart = addDays(base, -(dow === 0 ? 6 : dow - 1));
+  const week = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const weekHtml = week.map((d) => {
+    const k = iso(d);
+    const n = db.appointments.filter((a) => a.date === k && a.status !== 'cancelado').length;
+    return '<button class="wd ' + (k === day ? 'on' : '') + '" data-act="pick-day" data-day="' + k + '">' + DAYS_SHORT[d.getDay()] +
+      '<b>' + d.getDate() + '</b><span>' + (n ? n + ' atend.' : '—') + '</span></button>';
+  }).join('');
+  const ids = db.appointments.filter((a) => a.date > day && a.status !== 'cancelado')
+    .sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time)).slice(0, 5);
+  const upcoming = ids.length
+    ? '<h2 style="margin:26px 0 12px">Próximos dias</h2>' + ids.map((a) =>
+        '<div class="appt"><div class="time">' + fmtBR(a.date) + '<div class="tiny">' + a.start_time + '</div></div>' +
+        '<div><strong>' + esc(a.client_name) + '</strong> <span class="badge b-' + a.status + '">' + (STATUS_LABEL[a.status] || a.status) + '</span>' +
+        '<div class="tiny">' + esc(a.service_name) + ' · ' + brl(a.price) + '</div></div>' +
+        '<div class="actions"><button class="btn outline small" data-act="edit-appt" data-id="' + a.id + '">Editar</button></div></div>').join('')
+    : '';
+
+  return '<div class="top"><div><h1>Agenda</h1><div class="sub">' + esc(fmtLong(day)) + '</div></div>' +
+    '<button class="btn" data-act="new-appt">+ Novo atendimento</button></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><span>Atendimentos do dia</span><b>' + ativos.length + '</b></div>' +
+      '<div class="stat"><span>Previsto no dia</span><b>' + brl(previsto) + '</b></div>' +
+      '<div class="stat"><span>Aguardando confirmação</span><b>' + aguardando + '</b></div>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:14px">' +
+      '<div class="datebar">' +
+        '<button class="btn outline small" data-act="shift-day" data-delta="-1">‹</button>' +
+        '<input type="date" id="dayInput" value="' + day + '" style="max-width:165px">' +
+        '<button class="btn outline small" data-act="shift-day" data-delta="1">›</button>' +
+        '<button class="btn outline small" data-act="today">Hoje</button>' +
+      '</div>' +
+      '<div class="week">' + weekHtml + '</div>' +
+    '</div>' +
+    (list.length ? list.map(apptRow).join('') : '<div class="card empty">Nenhum atendimento neste dia. Use “Novo atendimento” para agendar.</div>') +
+    upcoming;
+}
+
+function apptRow(a) {
+  const end = hhmm(minutesOf(a.start_time) + (Number(a.duration_minutes) || 60));
+  const acts = [];
+  if (a.status === 'pendente') acts.push('<button class="btn small" data-act="confirm" data-id="' + a.id + '">Confirmar</button>');
+  if (a.status === 'confirmado') acts.push('<button class="btn small" data-act="complete" data-id="' + a.id + '">Concluir</button>');
+  if (a.status !== 'concluido' && a.status !== 'cancelado') acts.push('<button class="btn outline small" data-act="remind" data-id="' + a.id + '">Lembrete</button>');
+  if (a.payment_status !== 'pago' && a.status !== 'cancelado') acts.push('<button class="btn outline small" data-act="receive" data-id="' + a.id + '">Receber</button>');
+  acts.push('<button class="btn outline small" data-act="edit-appt" data-id="' + a.id + '">Editar</button>');
+  acts.push('<button class="btn outline small" data-act="del-appt" data-id="' + a.id + '">Excluir</button>');
+  return '<div class="appt">' +
+    '<div class="time">' + a.start_time + '<div class="tiny">' + end + '</div></div>' +
+    '<div>' +
+      '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><strong>' + esc(a.client_name) + '</strong>' +
+        '<span class="badge b-' + a.status + '">' + (STATUS_LABEL[a.status] || a.status) + '</span>' +
+        (a.payment_status === 'pago' ? '<span class="badge b-pago">Pago</span>' : '') + '</div>' +
+      '<div class="tiny" style="margin-top:2px">' + esc(a.service_name) + ' · ' + a.duration_minutes + ' min · ' + brl(a.price) + '</div>' +
+      (a.client_phone ? '<div class="tiny">' + esc(a.client_phone) + '</div>' : '') +
+      (a.notes ? '<div class="tiny" style="font-style:italic;margin-top:3px">' + esc(a.notes) + '</div>' : '') +
+    '</div>' +
+    '<div class="actions">' + acts.join('') + '</div>' +
+  '</div>';
+}
+
+function clientCards(q) {
+  const term = (q || '').toLowerCase().trim();
+  const list = db.clients.filter((c) => !term ||
+    (c.full_name || '').toLowerCase().includes(term) ||
+    (c.phone || '').toLowerCase().includes(term) ||
+    (c.instagram || '').toLowerCase().includes(term));
+  if (!list.length) return '<div class="card empty" style="grid-column:1/-1">Nenhuma cliente encontrada.</div>';
+  return list.map((c) =>
+    '<div class="card">' +
+      '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">' +
+        '<div><strong>' + esc(c.full_name) + '</strong>' +
+          '<div class="tiny">' + esc(c.phone || 'sem telefone') + (c.instagram ? ' · ' + esc(c.instagram) : '') + '</div></div>' +
+        '<div class="actions">' +
+          '<button class="btn outline small" data-act="edit-client" data-id="' + c.id + '">Editar</button>' +
+          '<button class="btn outline small" data-act="del-client" data-id="' + c.id + '">Excluir</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="tiny" style="margin-top:10px">' + visitsOf(c) + ' atendimento(s) concluído(s) · ' + brl(spentOf(c)) + ' pagos</div>' +
+      (c.notes ? '<div class="tiny" style="margin-top:6px;font-style:italic">' + esc(c.notes) + '</div>' : '') +
+      (c.anamnesis_allergies ? '<div class="tiny" style="margin-top:6px"><b>Alergias:</b> ' + esc(c.anamnesis_allergies) + '</div>' : '') +
+    '</div>').join('');
+}
+
+function viewClientes() {
+  return '<div class="top"><div><h1>Clientes</h1><div class="sub">Fichas, anamnese e histórico de atendimentos.</div></div>' +
+    '<button class="btn" data-act="new-client">+ Nova cliente</button></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><span>Clientes</span><b>' + db.clients.length + '</b></div>' +
+      '<div class="stat"><span>Já retornaram</span><b>' + db.clients.filter((c) => visitsOf(c) >= 2).length + '</b></div>' +
+      '<div class="stat"><span>Ticket médio pago</span><b>' + brl(ticket()) + '</b></div>' +
+    '</div>' +
+    '<div class="field"><input id="busca" placeholder="Buscar por nome, telefone ou Instagram"></div>' +
+    '<div class="grid2" id="clientList">' + clientCards('') + '</div>';
+}
+
+function ticket() {
+  const pago = db.appointments.filter((a) => a.payment_status === 'pago');
+  if (!pago.length) return 0;
+  return pago.reduce((s, a) => s + Number(a.price || 0), 0) / pago.length;
+}
+
+function viewServicos() {
+  const ativos = db.services.filter((s) => s.active !== false);
+  return '<div class="top"><div><h1>Serviços e valores</h1><div class="sub">Procedimentos, preços e duração usados nos agendamentos.</div></div>' +
+    '<button class="btn" data-act="new-service">+ Novo serviço</button></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><span>Serviços ativos</span><b>' + ativos.length + '</b></div>' +
+      '<div class="stat"><span>Preço médio</span><b>' + brl(ativos.length ? ativos.reduce((s, x) => s + Number(x.price || 0), 0) / ativos.length : 0) + '</b></div>' +
+      '<div class="stat"><span>Duração média</span><b>' + Math.round(ativos.length ? ativos.reduce((s, x) => s + Number(x.duration_minutes || 0), 0) / ativos.length : 0) + ' min</b></div>' +
+    '</div>' +
+    db.services.map((s) =>
+      '<div class="appt" style="grid-template-columns:1fr auto">' +
+        '<div><strong>' + esc(s.name) + '</strong> <span class="badge ' + (s.active === false ? 'b-cancelado' : 'b-confirmado') + '">' + (s.active === false ? 'Inativo' : 'Ativo') + '</span>' +
+          '<div class="tiny">' + esc(s.category || 'sem categoria') + ' · ' + s.duration_minutes + ' min · ' + brl(s.price) + '</div>' +
+          (s.description ? '<div class="tiny" style="margin-top:4px">' + esc(s.description) + '</div>' : '') +
+        '</div>' +
+        '<div class="actions">' +
+          '<button class="btn outline small" data-act="toggle-service" data-id="' + s.id + '">' + (s.active === false ? 'Ativar' : 'Desativar') + '</button>' +
+          '<button class="btn outline small" data-act="edit-service" data-id="' + s.id + '">Editar</button>' +
+          '<button class="btn outline small" data-act="del-service" data-id="' + s.id + '">Excluir</button>' +
+        '</div>' +
+      '</div>').join('') || '<div class="card empty">Nenhum serviço cadastrado.</div>';
+}
+
+function viewFinanceiro() {
+  const month = db.ui.month || todayISO().slice(0, 7);
+  const list = db.appointments.filter((a) => (a.date || '').startsWith(month) && a.status !== 'cancelado');
+  const done = list.filter((a) => a.status === 'concluido');
+  const faturado = done.reduce((s, a) => s + Number(a.price || 0), 0);
+  const recebido = done.filter((a) => a.payment_status === 'pago').reduce((s, a) => s + Number(a.price || 0), 0);
+  const aReceber = faturado - recebido;
+  const byService = {};
+  done.forEach((a) => { byService[a.service_name] = (byService[a.service_name] || 0) + Number(a.price || 0); });
+  const servicos = Object.keys(byService).sort((a, b) => byService[b] - byService[a]);
+  const rows = list.slice().sort((a, b) => (b.date + b.start_time).localeCompare(a.date + a.start_time));
+  return '<div class="top"><div><h1>Financeiro</h1><div class="sub">Faturamento e recebimentos do mês.</div></div>' +
+    '<input type="month" id="monthInput" value="' + month + '" style="max-width:180px"></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><span>Faturado (concluídos)</span><b>' + brl(faturado) + '</b></div>' +
+      '<div class="stat"><span>Recebido</span><b>' + brl(recebido) + '</b></div>' +
+      '<div class="stat"><span>A receber</span><b>' + brl(aReceber) + '</b></div>' +
+    '</div>' +
+    (servicos.length ? '<div class="card" style="margin-bottom:14px"><h2 style="font-size:17px;margin-bottom:10px">Por procedimento</h2>' +
+      servicos.map((n) => '<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)">' +
+        '<span class="tiny" style="font-size:13px">' + esc(n) + '</span><strong style="font-family:Fraunces,serif;font-weight:500">' + brl(byService[n]) + '</strong></div>').join('') +
+      '</div>' : '') +
+    '<h2 style="margin:22px 0 12px">Lançamentos do mês</h2>' +
+    (rows.length ? rows.map((a) =>
+      '<div class="appt" style="grid-template-columns:74px 1fr auto">' +
+        '<div class="time" style="font-size:14px">' + fmtBR(a.date) + '<div class="tiny">' + a.start_time + '</div></div>' +
+        '<div><strong>' + esc(a.client_name) + '</strong> <span class="badge b-' + a.status + '">' + (STATUS_LABEL[a.status] || a.status) + '</span>' +
+          '<div class="tiny">' + esc(a.service_name) + ' · ' + esc(a.payment_method || '—') + '</div></div>' +
+        '<div class="actions"><span class="badge ' + (a.payment_status === 'pago' ? 'b-pago' : 'b-pendente') + '">' + brl(a.price) + ' · ' + (a.payment_status === 'pago' ? 'pago' : 'a receber') + '</span>' +
+          (a.payment_status !== 'pago' && a.status !== 'cancelado' ? '<button class="btn outline small" data-act="receive" data-id="' + a.id + '">Receber</button>' : '') +
+        '</div>' +
+      '</div>').join('') : '<div class="card empty">Nenhum lançamento neste mês.</div>');
+}
+
+function viewEstoque() {
+  const low = db.materials.filter((m) => Number(m.quantity) <= Number(m.min_quantity));
+  const total = db.materials.reduce((s, m) => s + Number(m.quantity) * Number(m.cost_per_unit || 0), 0);
+  return '<div class="top"><div><h1>Estoque</h1><div class="sub">Materiais, quantidades e alertas de reposição.</div></div>' +
+    '<button class="btn" data-act="new-material">+ Novo material</button></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><span>Itens cadastrados</span><b>' + db.materials.length + '</b></div>' +
+      '<div class="stat"><span>Abaixo do mínimo</span><b style="color:' + (low.length ? '#8E3B42' : 'inherit') + '">' + low.length + '</b></div>' +
+      '<div class="stat"><span>Valor em estoque</span><b>' + brl(total) + '</b></div>' +
+    '</div>' +
+    (low.length ? '<div class="card" style="border-color:#E9C9A6;background:#FBF5EC;margin-bottom:14px"><strong style="font-size:14px">Repor: </strong><span class="tiny">' + low.map((m) => esc(m.name)).join(' · ') + '</span></div>' : '') +
+    (db.materials.map((m) =>
+      '<div class="appt" style="grid-template-columns:1fr auto auto">' +
+        '<div><strong>' + esc(m.name) + '</strong>' +
+          '<div class="tiny">' + esc(m.category || 'sem categoria') + ' · mínimo ' + m.min_quantity + ' ' + esc(m.unit || '') + ' · ' + brl(m.cost_per_unit) + '/' + esc(m.unit || 'un') + '</div>' +
+          (m.notes ? '<div class="tiny" style="margin-top:3px;font-style:italic">' + esc(m.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="qty"><button data-act="stock-dec" data-id="' + m.id + '">−</button><strong>' + m.quantity + '</strong><button data-act="stock-inc" data-id="' + m.id + '">+</button></div>' +
+        '<div class="actions">' +
+          '<button class="btn outline small" data-act="edit-material" data-id="' + m.id + '">Editar</button>' +
+          '<button class="btn outline small" data-act="del-material" data-id="' + m.id + '">Excluir</button>' +
+        '</div>' +
+      '</div>').join('') || '<div class="card empty">Nenhum material cadastrado.</div>');
+}
+
+function viewConfig() {
+  const s = db.settings;
+  return '<div class="top"><div><h1>Configurações</h1><div class="sub">Horários, contato e mensagens do seu studio.</div></div>' +
+    '<button class="btn" data-act="save-config">Salvar alterações</button></div>' +
+    '<div class="card" style="margin-bottom:14px">' +
+      '<h2 style="font-size:18px;margin-bottom:14px">Estúdio</h2>' +
+      '<div class="grid2">' +
+        '<div class="field"><label>Nome do studio</label><input id="c_studio" value="' + esc(s.studio_name) + '"></div>' +
+        '<div class="field"><label>Seu nome</label><input id="c_owner" value="' + esc(s.owner_name) + '"></div>' +
+        '<div class="field"><label>WhatsApp</label><input id="c_whats" value="' + esc(s.whatsapp) + '" placeholder="(11) 90000-0000"></div>' +
+        '<div class="field"><label>Instagram</label><input id="c_insta" value="' + esc(s.instagram) + '" placeholder="@seustudio"></div>' +
+      '</div>' +
+      '<div class="field"><label>Endereço ou observação de local</label><input id="c_addr" value="' + esc(s.address) + '"></div>' +
+      '<div class="field"><label>Apresentação</label><textarea id="c_about" rows="3">' + esc(s.about) + '</textarea></div>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:14px">' +
+      '<h2 style="font-size:18px;margin-bottom:14px">Horário de atendimento</h2>' +
+      '<div class="grid2">' +
+        '<div class="field"><label>Seg a sex — início</label><input type="time" id="c_wd_open" value="' + esc(s.weekday_open) + '"></div>' +
+        '<div class="field"><label>Seg a sex — fim</label><input type="time" id="c_wd_close" value="' + esc(s.weekday_close) + '"></div>' +
+        '<div class="field"><label>Fim de semana — início</label><input type="time" id="c_we_open" value="' + esc(s.weekend_open) + '"></div>' +
+        '<div class="field"><label>Fim de semana — fim</label><input type="time" id="c_we_close" value="' + esc(s.weekend_close) + '"></div>' +
+      '</div>' +
+      '<div class="field"><label>Intervalo entre horários</label><select id="c_slot">' +
+        [15, 30, 45, 60].map((v) => '<option value="' + v + '"' + (Number(s.slot_interval) === v ? ' selected' : '') + '>' + v + ' minutos</option>').join('') +
+      '</select></div>' +
+      '<div class="field"><label>Dias sem atendimento</label><div id="closedDays" style="display:flex;flex-wrap:wrap;gap:14px">' +
+        DAYS.map((d) => '<label class="sw" style="margin:0"><input type="checkbox" value="' + d + '"' + ((s.closed_days || []).includes(d) ? ' checked' : '') + '> ' + d + '</label>').join('') +
+      '</div></div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<h2 style="font-size:18px;margin-bottom:6px">Mensagens no WhatsApp</h2>' +
+      '<p class="tiny" style="margin:0 0 14px">Use {nome}, {servico}, {data} e {hora} — o texto é montado com os dados do atendimento. O sistema escolhe automaticamente entre a mensagem de <b>agendamento de extensão de cílios</b> e a de <b>manutenção</b> conforme o serviço agendado.</p>' +
+      '<div class="field"><label>Lembrete — agendamento de extensão de cílios</label><textarea id="c_reminder" rows="3">' + esc(s.reminder_message) + '</textarea></div>' +
+      '<div class="field"><label>Lembrete — manutenção</label><textarea id="c_reminder_maint" rows="3">' + esc(s.reminder_message_maintenance || '') + '</textarea></div>' +
+      '<div class="field"><label>Confirmação do agendamento</label><textarea id="c_confirm" rows="3">' + esc(s.confirm_message) + '</textarea></div>' +
+    '</div>';
+}
+
+const VIEWS = { agenda: viewAgenda, clientes: viewClientes, servicos: viewServicos, financeiro: viewFinanceiro, estoque: viewEstoque, config: viewConfig };
+
+/* ---------- diálogos ---------- */
+function apptModal(id, presetDay) {
+  const a = id ? db.appointments.find((x) => x.id === id) : {
+    id: '', date: presetDay || db.ui.day, start_time: '', client_name: '', client_phone: '',
+    service_name: db.services[0] ? db.services[0].name : '', price: db.services[0] ? db.services[0].price : 0,
+    duration_minutes: db.services[0] ? db.services[0].duration_minutes : 90,
+    status: 'confirmado', payment_status: 'pendente', payment_method: 'pix', notes: ''
+  };
+  if (!a) return;
+  const opts = db.services.map((s) => '<option value="' + esc(s.name) + '"' + (s.name === a.service_name ? ' selected' : '') + '>' + esc(s.name) + ' — ' + brl(s.price) + '</option>').join('');
+  openModal(
+    '<div class="head"><h2>' + (id ? 'Editar atendimento' : 'Novo atendimento') + '</h2>' +
+      '<p class="tiny" style="margin:4px 0 0">Horários ocupados não aparecem na lista.</p></div>' +
+    '<input type="hidden" id="f_id" value="' + (a.id || '') + '">' +
+    '<datalist id="clientListNames">' + db.clients.map((c) => '<option value="' + esc(c.full_name) + '"></option>').join('') + '</datalist>' +
+    '<div class="grid2">' +
+      '<div class="field"><label>Nome da cliente</label><input id="f_name" list="clientListNames" value="' + esc(a.client_name) + '" placeholder="Ex: Ana Souza"></div>' +
+      '<div class="field"><label>WhatsApp</label><input id="f_phone" value="' + esc(a.client_phone) + '" placeholder="(11) 90000-0000"></div>' +
+      '<div class="field"><label>Procedimento</label><select id="f_service">' + opts + '</select></div>' +
+      '<div class="grid2" style="gap:10px">' +
+        '<div class="field"><label>Valor (R$)</label><input type="number" id="f_price" value="' + (a.price || 0) + '"></div>' +
+        '<div class="field"><label>Duração (min)</label><input type="number" id="f_duration" step="15" value="' + (a.duration_minutes || 60) + '"></div>' +
+      '</div>' +
+      '<div class="field"><label>Data</label><input type="date" id="f_date" value="' + a.date + '"></div>' +
+      '<div class="field"><label>Horário</label><select id="f_time"></select></div>' +
+      '<div class="field"><label>Situação</label><select id="f_status">' +
+        [['pendente', 'Aguardando confirmação'], ['confirmado', 'Confirmado'], ['concluido', 'Concluído'], ['cancelado', 'Cancelado']]
+          .map(([v, l]) => '<option value="' + v + '"' + (a.status === v ? ' selected' : '') + '>' + l + '</option>').join('') +
+      '</select></div>' +
+      '<div class="field"><label>Pagamento</label><select id="f_pay">' +
+        [['pendente', 'A receber'], ['pago', 'Pago']].map(([v, l]) => '<option value="' + v + '"' + (a.payment_status === v ? ' selected' : '') + '>' + l + '</option>').join('') +
+      '</select></div>' +
+      '<div class="field" style="grid-column:1/-1"><label>Forma de pagamento</label><select id="f_method">' +
+        [['pix', 'Pix'], ['dinheiro', 'Dinheiro'], ['cartao', 'Cartão'], ['outro', 'Outro']].map(([v, l]) => '<option value="' + v + '"' + (a.payment_method === v ? ' selected' : '') + '>' + l + '</option>').join('') +
+      '</select></div>' +
+      '<div class="field" style="grid-column:1/-1"><label>Observações</label><textarea id="f_notes" rows="2" placeholder="Preferências, alergias, primeira vez...">' + esc(a.notes) + '</textarea></div>' +
+    '</div>' +
+    modalFoot(id ? 'Salvar alterações' : 'Salvar atendimento', 'save-appt'));
+
+  const current = a.start_time;
+  refreshTimes(current);
+  $('#f_service').addEventListener('change', () => {
+    const s = db.services.find((x) => x.name === $('#f_service').value);
+    if (s) { $('#f_price').value = s.price; $('#f_duration').value = s.duration_minutes || 60; refreshTimes($('#f_time').value); }
+  });
+  $('#f_date').addEventListener('change', () => refreshTimes());
+  $('#f_duration').addEventListener('input', () => refreshTimes($('#f_time').value));
+  $('#f_name').addEventListener('change', () => {
+    const c = db.clients.find((x) => (x.full_name || '').toLowerCase() === val('#f_name').toLowerCase());
+    if (c) { $('#f_phone').value = c.phone || ''; }
+  });
+}
+
+function refreshTimes(keep) {
+  const date = val('#f_date') || todayISO();
+  const dur = Number(val('#f_duration')) || 60;
+  const editing = val('#f_id');
+  const want = keep !== undefined ? keep : val('#f_time');
+  let list = slotsFor(date, dur, editing || null);
+  if (want && !list.includes(want)) list = [want].concat(list);
+  $('#f_time').innerHTML = '<option value="">Escolher</option>' +
+    (list.length ? list.map((t) => '<option value="' + t + '"' + (t === want ? ' selected' : '') + '>' + t + '</option>').join('')
+                 : '<option value="" disabled>Sem horário livre nesse dia</option>');
+}
+
+function clientModal(id) {
+  const c = id ? db.clients.find((x) => x.id === id) : { full_name: '', phone: '', email: '', instagram: '', notes: '', anamnesis_allergies: '', anamnesis_medications: '', anamnesis_observations: '', anamnesis_lenses: false, anamnesis_pregnant: false };
+  if (!c) return;
+  openModal(
+    '<div class="head"><h2>' + (id ? 'Editar cliente' : 'Nova cliente') + '</h2><p class="tiny" style="margin:4px 0 0">Ficha e anamnese do atendimento.</p></div>' +
+    '<input type="hidden" id="cf_id" value="' + (c.id || '') + '">' +
+    '<div class="grid2">' +
+      '<div class="field"><label>Nome completo</label><input id="cf_name" value="' + esc(c.full_name) + '"></div>' +
+      '<div class="field"><label>WhatsApp</label><input id="cf_phone" value="' + esc(c.phone) + '"></div>' +
+      '<div class="field"><label>E-mail</label><input id="cf_email" value="' + esc(c.email) + '"></div>' +
+      '<div class="field"><label>Instagram</label><input id="cf_insta" value="' + esc(c.instagram) + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Preferências e observações</label><textarea id="cf_notes" rows="2">' + esc(c.notes) + '</textarea></div>' +
+    '<h2 style="font-size:16px;margin:18px 0 10px">Anamnese</h2>' +
+    '<div class="grid2">' +
+      '<div class="field"><label>Alergias (adesivo, cola, látex, cosméticos)</label><input id="cf_allergies" value="' + esc(c.anamnesis_allergies) + '"></div>' +
+      '<div class="field"><label>Medicamentos em uso</label><input id="cf_meds" value="' + esc(c.anamnesis_medications) + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Observações gerais</label><textarea id="cf_obs" rows="2">' + esc(c.anamnesis_observations) + '</textarea></div>' +
+    '<label class="sw"><input type="checkbox" id="cf_lenses"' + (c.anamnesis_lenses ? ' checked' : '') + '> Usa lentes de contato</label>' +
+    '<label class="sw"><input type="checkbox" id="cf_pregnant"' + (c.anamnesis_pregnant ? ' checked' : '') + '> Gestante ou lactante</label>' +
+    modalFoot(id ? 'Salvar alterações' : 'Salvar cliente', 'save-client'));
+}
+
+function serviceModal(id) {
+  const s = id ? db.services.find((x) => x.id === id) : { name: '', category: '', description: '', price: 0, duration_minutes: 90, active: true };
+  if (!s) return;
+  openModal(
+    '<div class="head"><h2>' + (id ? 'Editar serviço' : 'Novo serviço') + '</h2></div>' +
+    '<input type="hidden" id="sf_id" value="' + (s.id || '') + '">' +
+    '<div class="field"><label>Nome</label><input id="sf_name" value="' + esc(s.name) + '"></div>' +
+    '<div class="grid2">' +
+      '<div class="field"><label>Categoria</label><input id="sf_cat" value="' + esc(s.category) + '" placeholder="Volume, fio a fio, lifting..."></div>' +
+      '<div class="field"><label>Duração (min)</label><input type="number" step="15" id="sf_dur" value="' + (s.duration_minutes || 90) + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Valor (R$)</label><input type="number" id="sf_price" value="' + (s.price || 0) + '"></div>' +
+    '<div class="field"><label>Descrição</label><textarea id="sf_desc" rows="2">' + esc(s.description) + '</textarea></div>' +
+    '<label class="sw"><input type="checkbox" id="sf_active"' + (s.active !== false ? ' checked' : '') + '> Serviço ativo</label>' +
+    modalFoot(id ? 'Salvar alterações' : 'Salvar serviço', 'save-service'));
+}
+
+function materialModal(id) {
+  const m = id ? db.materials.find((x) => x.id === id) : { name: '', category: '', unit: 'unidade', quantity: 0, min_quantity: 0, cost_per_unit: 0, notes: '' };
+  if (!m) return;
+  openModal(
+    '<div class="head"><h2>' + (id ? 'Editar material' : 'Novo material') + '</h2></div>' +
+    '<input type="hidden" id="mf_id" value="' + (m.id || '') + '">' +
+    '<div class="grid2">' +
+      '<div class="field"><label>Nome</label><input id="mf_name" value="' + esc(m.name) + '"></div>' +
+      '<div class="field"><label>Categoria</label><input id="mf_cat" value="' + esc(m.category) + '"></div>' +
+      '<div class="field"><label>Unidade</label><input id="mf_unit" value="' + esc(m.unit) + '"></div>' +
+      '<div class="field"><label>Custo por unidade (R$)</label><input type="number" id="mf_cost" value="' + (m.cost_per_unit || 0) + '"></div>' +
+      '<div class="field"><label>Quantidade</label><input type="number" id="mf_qty" value="' + (m.quantity || 0) + '"></div>' +
+      '<div class="field"><label>Estoque mínimo</label><input type="number" id="mf_min" value="' + (m.min_quantity || 0) + '"></div>' +
+    '</div>' +
+    '<div class="field"><label>Observações</label><textarea id="mf_notes" rows="2">' + esc(m.notes) + '</textarea></div>' +
+    modalFoot(id ? 'Salvar alterações' : 'Salvar material', 'save-material'));
+}
+
+/* ---------- gravações ---------- */
+function saveAppt() {
+  const id = val('#f_id');
+  const data = {
+    client_name: val('#f_name'), client_phone: val('#f_phone'), service_name: val('#f_service'),
+    price: num('#f_price'), date: val('#f_date'), start_time: val('#f_time'),
+    duration_minutes: Number(val('#f_duration')) || 60, status: val('#f_status'),
+    payment_status: val('#f_pay'), payment_method: val('#f_method'), notes: val('#f_notes')
+  };
+  if (!data.client_name || !data.service_name || !data.date || !data.start_time) {
+    toast('Preencha nome, procedimento, data e horário'); return;
+  }
+  if (id) {
+    const a = db.appointments.find((x) => x.id === id);
+    if (a) Object.assign(a, data);
+  } else {
+    db.appointments.push(Object.assign({ id: uid() }, data));
+  }
+  db.ui.day = data.date;
+  closeModal();
+  save();
+  toast(id ? 'Atendimento atualizado' : 'Atendimento salvo');
+}
+
+function saveClient() {
+  const id = val('#cf_id');
+  const data = {
+    full_name: val('#cf_name'), phone: val('#cf_phone'), email: val('#cf_email'), instagram: val('#cf_insta'),
+    notes: val('#cf_notes'), anamnesis_allergies: val('#cf_allergies'), anamnesis_medications: val('#cf_meds'),
+    anamnesis_observations: val('#cf_obs'), anamnesis_lenses: $('#cf_lenses').checked, anamnesis_pregnant: $('#cf_pregnant').checked
+  };
+  if (!data.full_name) { toast('Informe o nome da cliente'); return; }
+  const old = id ? db.clients.find((x) => x.id === id) : null;
+  if (old) {
+    if (old.full_name && old.full_name !== data.full_name) {
+      db.appointments.forEach((a) => { if ((a.client_name || '').toLowerCase() === old.full_name.toLowerCase()) a.client_name = data.full_name; });
+    }
+    Object.assign(old, data);
+  } else {
+    db.clients.push(Object.assign({ id: uid() }, data));
+  }
+  closeModal(); save(); toast(id ? 'Ficha atualizada' : 'Cliente cadastrada');
+}
+
+function saveService() {
+  const id = val('#sf_id');
+  const data = { name: val('#sf_name'), category: val('#sf_cat'), description: val('#sf_desc'), duration_minutes: Number(val('#sf_dur')) || 60, price: num('#sf_price'), active: $('#sf_active').checked };
+  if (!data.name) { toast('Informe o nome do serviço'); return; }
+  if (id) { const s = db.services.find((x) => x.id === id); if (s) Object.assign(s, data); }
+  else db.services.push(Object.assign({ id: uid() }, data));
+  closeModal(); save(); toast(id ? 'Serviço atualizado' : 'Serviço criado');
+}
+
+function saveMaterial() {
+  const id = val('#mf_id');
+  const data = { name: val('#mf_name'), category: val('#mf_cat'), unit: val('#mf_unit') || 'unidade', quantity: Number(val('#mf_qty')) || 0, min_quantity: Number(val('#mf_min')) || 0, cost_per_unit: num('#mf_cost'), notes: val('#mf_notes') };
+  if (!data.name) { toast('Informe o nome do material'); return; }
+  if (id) { const m = db.materials.find((x) => x.id === id); if (m) Object.assign(m, data); }
+  else db.materials.push(Object.assign({ id: uid() }, data));
+  closeModal(); save(); toast(id ? 'Material atualizado' : 'Material cadastrado');
+}
+
+function saveConfig() {
+  const s = db.settings;
+  s.studio_name = val('#c_studio'); s.owner_name = val('#c_owner'); s.whatsapp = val('#c_whats');
+  s.instagram = val('#c_insta'); s.address = val('#c_addr'); s.about = val('#c_about');
+  s.weekday_open = val('#c_wd_open'); s.weekday_close = val('#c_wd_close');
+  s.weekend_open = val('#c_we_open'); s.weekend_close = val('#c_we_close');
+  s.slot_interval = Number(val('#c_slot')) || 30;
+  s.closed_days = $$('#closedDays input:checked').map((i) => i.value);
+  s.reminder_message = val('#c_reminder');
+  s.reminder_message_maintenance = val('#c_reminder_maint');
+  s.confirm_message = val('#c_confirm');
+  save(); toast('Configurações salvas');
+}
+
+function remind(a) {
+  const s = db.settings;
+  const tpl = isMaintenanceAppt(a)
+    ? (s.reminder_message_maintenance || s.reminder_message || '')
+    : (s.reminder_message || '');
+  const text = String(tpl || 'Oi {nome}! Lembrete do seu atendimento em {data} às {hora}.')
+    .replace('{nome}', a.client_name || '')
+    .replace('{servico}', a.service_name || '')
+    .replace('{data}', fmtLong(a.date))
+    .replace('{hora}', a.start_time || '');
+  const phone = digits(a.client_phone);
+  window.open(phone ? 'https://wa.me/55' + phone + '?text=' + encodeURIComponent(text) : 'https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+/* ---------- render ---------- */
+function render() {
+  $('#brandName').textContent = db.settings.studio_name || 'Studio';
+  $('#nav').innerHTML = NAV.map(([k, l]) => '<button class="' + (db.ui.view === k ? 'on' : '') + '" data-act="go" data-view="' + k + '">' + l + '</button>').join('');
+  $('#main').innerHTML = (VIEWS[db.ui.view] || viewAgenda)();
+  const dayInput = $('#dayInput');
+  if (dayInput) dayInput.addEventListener('change', () => { db.ui.day = dayInput.value || todayISO(); save(); });
+  const monthInput = $('#monthInput');
+  if (monthInput) monthInput.addEventListener('change', () => { db.ui.month = monthInput.value || todayISO().slice(0, 7); save(); });
+  const busca = $('#busca');
+  if (busca) busca.addEventListener('input', () => { $('#clientList').innerHTML = clientCards(busca.value); });
+}
+
+/* ---------- ações ---------- */
+document.addEventListener('click', (ev) => {
+  const el = ev.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+  const id = el.dataset.id;
+  const appt = () => db.appointments.find((a) => a.id === id);
+  switch (act) {
+    case 'go': db.ui.view = el.dataset.view; save(); break;
+    case 'close': closeModal(); break;
+    case 'shift-day': db.ui.day = iso(addDays(parseISO(db.ui.day), Number(el.dataset.delta))); save(); break;
+    case 'today': db.ui.day = todayISO(); save(); break;
+    case 'pick-day': db.ui.day = el.dataset.day; save(); break;
+    case 'new-appt': apptModal(null); break;
+    case 'edit-appt': apptModal(id); break;
+    case 'save-appt': saveAppt(); break;
+    case 'confirm': { const a = appt(); if (a) { a.status = 'confirmado'; save(); toast('Atendimento confirmado'); } break; }
+    case 'complete': { const a = appt(); if (a) { a.status = 'concluido'; save(); toast('Atendimento concluído'); } break; }
+    case 'receive': { const a = appt(); if (a) { a.payment_status = 'pago'; save(); toast('Pagamento registrado'); } break; }
+    case 'remind': { const a = appt(); if (a) remind(a); break; }
+    case 'del-appt': if (appt() && confirm('Excluir este atendimento?')) { db.appointments = db.appointments.filter((a) => a.id !== id); save(); toast('Atendimento excluído'); } break;
+    case 'new-client': clientModal(null); break;
+    case 'edit-client': clientModal(id); break;
+    case 'save-client': saveClient(); break;
+    case 'del-client': {
+      const c = db.clients.find((x) => x.id === id);
+      if (c && confirm('Excluir a ficha de ' + c.full_name + '? Os atendimentos continuam na agenda.')) {
+        db.clients = db.clients.filter((x) => x.id !== id); save(); toast('Ficha excluída');
+      }
+      break;
+    }
+    case 'new-service': serviceModal(null); break;
+    case 'edit-service': serviceModal(id); break;
+    case 'save-service': saveService(); break;
+    case 'toggle-service': { const s = db.services.find((x) => x.id === id); if (s) { s.active = s.active === false; save(); } break; }
+    case 'del-service': if (confirm('Excluir este serviço?')) { db.services = db.services.filter((x) => x.id !== id); save(); toast('Serviço excluído'); } break;
+    case 'new-material': materialModal(null); break;
+    case 'edit-material': materialModal(id); break;
+    case 'save-material': saveMaterial(); break;
+    case 'stock-inc': { const m = db.materials.find((x) => x.id === id); if (m) { m.quantity = Number(m.quantity || 0) + 1; save(); } break; }
+    case 'stock-dec': { const m = db.materials.find((x) => x.id === id); if (m) { m.quantity = Math.max(0, Number(m.quantity || 0) - 1); save(); } break; }
+    case 'del-material': if (confirm('Excluir este material?')) { db.materials = db.materials.filter((x) => x.id !== id); save(); toast('Material excluído'); } break;
+    case 'save-config': saveConfig(); break;
+  }
+});
+
+render();
+</script>
+</body>
+</html>
